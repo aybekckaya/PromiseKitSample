@@ -7,11 +7,14 @@
 //
 
 import Foundation
+import SwiftyJSON
 
-class BaseResponse: JsonInitializable, JsonConvertible {
+class BaseResponse: JsonConvertible {
     
     let url:String?
     let notificationDesc:String?
+    var total:Int = 0
+    
     /*
     let ErrorCode: Int?
     let _FriendlyNotification: String?
@@ -34,9 +37,10 @@ class BaseResponse: JsonInitializable, JsonConvertible {
  */
         url = nil
         notificationDesc = nil
+        total = 0
     }
     
-    required init(json: JSON.JSON) throws {
+    required init(json: JSON) {
         /*
         ErrorCode = try json.getOptional(key: "ErrorCode")
         _FriendlyNotification = try json.getOptional(key: "FriendlyNotification")
@@ -46,8 +50,10 @@ class BaseResponse: JsonInitializable, JsonConvertible {
         _ResultMessage = try json.getOptional(key: "ResultMessage")
         ShowNotification = try json.getOptional(key: "ShowNotification")
  */
-        url = try json.getOptional(key: "url")
-        notificationDesc = try json.getOptional(key: "notification")
+        url = json["url"].string
+        notificationDesc = json["notification"].string
+        total = json["total"].int ?? 0
+        
     }
     
     var Notification: String {
@@ -67,32 +73,5 @@ class BaseResponse: JsonInitializable, JsonConvertible {
  */
     }
     
-    func toJSON() -> JSON.JSON {
-        var json: JSON.JSON =  [:]
-        json["url"] = url
-        json["notification"] = notificationDesc
-        /*
-        json["ErrorCode"] = ErrorCode
-        if let _FriendlyNotification = _FriendlyNotification {
-            json["_FriendlyNotification"] = _FriendlyNotification
-        }
-        if let _Notification = _Notification {
-            json["_Notification"] = _Notification
-        }
-        if let _Success = _Success {
-            json["_Success"] = _Success
-        }
-        if let _IsSuccess = _IsSuccess {
-            json["_IsSuccess"] = _IsSuccess
-        }
-        if let _ResultMessage = _ResultMessage {
-            json["_ResultMessage"] = _ResultMessage
-        }
-        if let ShowNotification = ShowNotification {
-            json["ShowNotification"] = ShowNotification
-        }
- */
-        return json
-    }
 }
 

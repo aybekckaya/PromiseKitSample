@@ -37,6 +37,11 @@ class MenuVC: BaseVC {
 
         // Do any additional setup after loading the view.
         
+        let vc:NetworkResultVC = NetworkResultVC(nibName: NetworkResultVC.identifier, bundle: nil)
+        navigationController?.pushViewController(vc, animated: false)
+        return
+        
+        
         title = "Promise Kit Sample"
         
         let cellNib = UINib(nibName: MenuCell.identifier, bundle: nil)

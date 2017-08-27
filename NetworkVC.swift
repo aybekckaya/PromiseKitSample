@@ -10,11 +10,26 @@ import UIKit
 
 enum NetworkQueryPageType:Int {
     case allSeasons
+    case cocktailCategoryList
+    case raceSchedule
+    case requiSampleGET
+    case requiSampleGETWithParameters
+    case requiSamplePOST
     
     func stringify()->String {
         switch self {
         case .allSeasons:
             return "Get all seasons"
+        case .cocktailCategoryList:
+            return "Get Cocktail Category List"
+        case .raceSchedule:
+            return "Race Schedule"
+        case .requiSampleGET:
+            return "Requi sample to get"
+        case .requiSampleGETWithParameters:
+            return "Requi get with parameters"
+        case .requiSamplePOST:
+            return "Requi post"
         default:
             break
         }

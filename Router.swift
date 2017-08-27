@@ -9,84 +9,13 @@
 import Foundation
 import UIKit
 import PromiseKit
+import SwiftyJSON
 
 
 public enum CastingError: Error {
     case Failure(key: String)
 }
 
-// Helper functions for Dictionary to get values with certain type or throw
-extension Dictionary {
-    
-    func get<T>(key: String) throws -> T {
-        guard let keyAs = key as? Key else {
-            throw CastingError.Failure(key: "-")
-        }
-        guard let obj = self[keyAs], let objAs = obj as? T else {
-            throw CastingError.Failure(key: key)
-        }
-        return objAs
-    }
-    
-    func getOptional<T>(key: String) throws -> T? {
-        guard let keyAs = key as? Key else {
-            throw CastingError.Failure(key: "-")
-        }
-        guard let obj = self[keyAs], !(obj is NSNull) else {
-            return nil
-        }
-        guard let objAs = obj as? T else {
-            throw CastingError.Failure(key: key)
-        }
-        return objAs
-    }
-    
-    func get<T: JsonInitializable>(key: String) throws -> T {
-        guard let keyAs = key as? Key else {
-            throw CastingError.Failure(key: "-")
-        }
-        guard let obj = self[keyAs], let objAs = obj as? [String: AnyObject] else {
-            throw CastingError.Failure(key: key)
-        }
-        return try T(json: objAs)
-    }
-    
-    func getOptional<T: JsonInitializable>(key: String) throws -> T? {
-        guard let keyAs = key as? Key else {
-            throw CastingError.Failure(key: "-")
-        }
-        guard let obj = self[keyAs], !(obj is NSNull) else {
-            return nil
-        }
-        guard let objAs = obj as? [String: AnyObject] else {
-            throw CastingError.Failure(key: key)
-        }
-        return try T(json: objAs)
-    }
-    
-    func get<T: JsonInitializable>(key: String) throws -> [T] {
-        guard let keyAs = key as? Key else {
-            throw CastingError.Failure(key: "-")
-        }
-        guard let obj = self[keyAs], let objAs = obj as? [[String: AnyObject]] else {
-            throw CastingError.Failure(key: key)
-        }
-        return try objAs.map { try T(json: $0)}
-    }
-    
-    func getOptional<T: JsonInitializable>(key: String) throws -> [T]? {
-        guard let keyAs = key as? Key else {
-            throw CastingError.Failure(key: "-")
-        }
-        guard let obj = self[keyAs], !(obj is NSNull) else {
-            return nil
-        }
-        guard let objAs = obj as? [[String: AnyObject]] else {
-            throw CastingError.Failure(key: key)
-        }
-        return try objAs.map { try T(json: $0)}
-    }
-}
 
 // Helper function for Dictionary to get query string items
 extension Dictionary {
@@ -118,10 +47,14 @@ enum HTTPMethod:String {
     case POST = "POST"
 }
 
+protocol JsonConvertible {
+    init(json:JSON)
+}
+
 protocol Endpoint {
     var showWarning: Bool { get }
     var urlRequest: URLRequest { get }
-    func promise<T: JsonInitializable>() -> Promise<T>
+    //func promise<T: JsonConvertible>() -> Promise<T>
 }
 
 extension Endpoint {
@@ -181,11 +114,15 @@ extension Endpoint {
     
     func checkErrorData(data: Data) {
         do {
+            let json = JSON(data: data)
+            print("json : \(json)")
+            /*
             // Try to parse response data for friendly notification
             let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
             guard let dict = json as? [String: AnyObject], let jsonDict = dict["d"] as? JSON.JSON else { throw JSONError.unexpectedRootNode(json) }
             let response = try BaseResponse(json: jsonDict)
             //WarningAlerts.showAlert(message: response.Notification)
+ */
         } catch let error as NSError {
             print("json error: \(error.localizedDescription)")
             processError(error)
@@ -193,38 +130,79 @@ extension Endpoint {
     }
 }
 
-public struct JSON {
-    // This typealias is declared in a dummy    JSON struct because global declarations may increase build time
-    typealias JSON = [String: Any]
-}
 
-protocol JsonInitializable {
-    init(json: JSON.JSON) throws
-}
+/*
+ 
+ func createRequestBodyWith(parameters:[String:NSObject], filePathKey:String, boundary:String) -> NSData{
+ 
+ let body = NSMutableData()
+ 
+ for (key, value) in parameters {
+ body.appendString(string: "--\(boundary)\r\n")
+ body.appendString(string: "Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+ body.appendString(string: "\(value)\r\n")
+ }
+ 
+ body.appendString(string: "--\(boundary)\r\n")
+ 
+ var mimetype = "image/jpg"
+ 
+ let defFileName = "yourImageName.jpg"
+ 
+ let imageData = UIImageJPEGRepresentation(yourImage, 1)
+ 
+ body.appendString(string: "Content-Disposition: form-data; name=\"\(filePathKey!)\"; filename=\"\(defFileName)\"\r\n")
+ body.appendString(string: "Content-Type: \(mimetype)\r\n\r\n")
+ body.append(imageData!)
+ body.appendString(string: "\r\n")
+ 
+ body.appendString(string: "--\(boundary)--\r\n")
+ 
+ return body
+ }
+ 
+ 
+ 
+ func generateBoundaryString() -> String {
+ return "Boundary-\(NSUUID().uuidString)"
+ }
+ 
+ 
+ 
+ extension NSMutableData {
+ 
+ func appendString(string: String) {
+ let data = string.data(using: String.Encoding.utf8, allowLossyConversion: true)
+ append(data!)
+ }
+ 
+ 
+ */
 
-extension JsonInitializable {
-    init?(persistanceKey: String) {
-        guard let jsonObj = UserDefaults.standard.object(forKey: persistanceKey) as? JSON.JSON else { return nil }
-        try? self.init(json: jsonObj)
-    }
-}
 
-extension JsonConvertible {
-    func persist(key: String) {
-        let json = self.toJSON()
-        UserDefaults.standard.set(json, forKey: key)
-        UserDefaults.standard.synchronize()
+extension Endpoint {
+    
+    func getHttpBodyForPostRequest(parameters:[String:Any], filePathKey:String)->Data {
+        let body:NSMutableData = NSMutableData()
+        let boundary:String = "Boundary-\(NSUUID().uuidString)"
+        for (key, value) in parameters {
+            body.appendString(string: "--\(boundary)\r\n")
+            body.appendString(string: "Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+            body.appendString(string: "\(value)\r\n")
+        }
+        
     }
     
-    func removeNilParameters(parameters: [String: Any?]) -> JSON.JSON {
-        var requestJSON: JSON.JSON = [:]
-        parameters.lazy.filter { $0.1 != nil }.forEach { requestJSON[$0.0] = $0.1 }
-        return requestJSON
-    }
+    
 }
 
-protocol JsonConvertible {
-    func toJSON() -> JSON.JSON
+extension NSMutableData {
+    
+    func appendString(string: String) {
+        let data = string.data(using: String.Encoding.utf8, allowLossyConversion: true)
+        append(data!)
+    }
+ 
 }
 
 enum RouterError: Error {

@@ -11,7 +11,7 @@ import PromiseKit
 
 class NetworkResultVC: BaseVC {
 
-    var queryType:NetworkQueryPageType = NetworkQueryPageType.allSeasons
+    var queryType:NetworkQueryPageType = NetworkQueryPageType.requiSamplePOST
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +25,13 @@ class NetworkResultVC: BaseVC {
         switch queryType {
         case .allSeasons:
             seasonsRequest()
+        case .cocktailCategoryList:
+            
+            break
+        case .raceSchedule:
+            raceScheduleRequest()
+        case .requiSamplePOST:
+            requiSamplePostRequest()
         default:
             break
         }
@@ -49,6 +56,19 @@ extension NetworkResultVC {
         }
     }
     
+    
+    func raceScheduleRequest() {
+        let racePromise:Promise<RaceSchedule> = F1Endpoint.RaceScheduleEnum(year: "2001").promise()
+        racePromise.then { scheduleData -> Void in
+            print("data : \(scheduleData)")
+        }.catch { error in
+            print("error :\(error)")
+        }
+    }
+    
+    func requiSamplePostRequest() {
+        
+    }
     
     
     

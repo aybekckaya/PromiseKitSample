@@ -1,5 +1,5 @@
 //
-//  F1Endpoint.swift
+//  RequiEndpoint.swift
 //  PromiseKitSample
 //
 //  Created by aybek can kaya on 27/08/2017.
@@ -10,18 +10,22 @@ import Foundation
 import PromiseKit
 import SwiftyJSON
 
-enum F1Endpoint:Endpoint {
-    case GetSeasons
-    case RaceScheduleEnum(year:String)
+enum RequiEndpoint:Endpoint {
+    case GetRequest
+    case GetRequestWithParameters(parameters:[String:Any])
+    case PostRequest(parameters:[String:Any])
+    
     
     fileprivate var route: RouteParams {
         switch self {
-        case .GetSeasons:
-            return (path: "seasons.json" , parameters:nil , responseType: Season.self , method:HTTPMethod.GET)
-        case .RaceScheduleEnum(let year):
-            let path = year+".json"
-            return (path: path , parameters:nil , responseType: RaceSchedule.self , method:HTTPMethod.GET)
+        case .GetRequest:
+            return (path: "sampleGetReq" , parameters:nil , responseType: Season.self , method:HTTPMethod.GET)
+        case .GetRequestWithParameters(let parametersDct):
+            return (path: "sampleGetReqParameters" , parameters:parametersDct , responseType: Season.self , method:HTTPMethod.GET)
+        case .PostRequest(let parametersDct):
+            return (path: "samplePostReq" , parameters:parametersDct , responseType: Season.self , method:HTTPMethod.POST)
         }
+        
         
     }
     
@@ -35,12 +39,12 @@ enum F1Endpoint:Endpoint {
 
 
 
-extension F1Endpoint {
-    fileprivate static let baseUrl: URL = URL(string: baseApiURL)!
+extension RequiEndpoint {
+    fileprivate static let baseUrl: URL = URL(string: "http://localhost:8888/mstGame/public/samples/")!
     
     func promise<T:JsonConvertible>()->Promise<T> {
         return Promise { fulfill, reject in
-         
+            
             let session = URLSession.shared
             let dataTask = session.dataTask(with: urlRequest) { data, response, error in
                 
@@ -64,7 +68,7 @@ extension F1Endpoint {
                     return
                 }
                 fulfill(model)
-            }    
+            }
             dataTask.resume()
         }
     }
@@ -79,15 +83,34 @@ extension F1Endpoint {
     
     fileprivate func urlRequest(path: String, parameters: [String: Any]? , method:HTTPMethod) -> URLRequest {
         
-        let url = F1Endpoint.baseUrl.appendingPathComponent(path)
+        
+        
+        
+        let url = RequiEndpoint.baseUrl.appendingPathComponent(path)
         let request = NSMutableURLRequest(url: url)
         //request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
         request.httpMethod = method.rawValue
-       // let parameters = parameters ?? [:]
-       // request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
-       
+        // let parameters = parameters ?? [:]
+        // request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
+        
         return request as URLRequest
         
     }
     
+    
+
+    
+    
+    
+    
+    
 }
+
+
+
+
+
+
+
+
+
