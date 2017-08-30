@@ -12,6 +12,20 @@ import PromiseKit
 import SwiftyJSON
 
 
+enum MimeNetwork:String {
+    case JPG = "image/jpeg"
+    case PNG = "image/png"
+    case MP3 = "audio/mpeg3"
+}
+
+struct MediaNetwork {
+    var mimeType:MimeNetwork = MimeNetwork.JPG
+    var mediaName:String = ""
+    var mediaData:Data?
+}
+
+
+
 public enum CastingError: Error {
     case Failure(key: String)
 }
@@ -20,6 +34,7 @@ public enum CastingError: Error {
 // Helper function for Dictionary to get query string items
 extension Dictionary {
     func toQueryItems(prefix: String = "") -> [NSURLQueryItem] {
+        
         return self.flatMap { (key, value) -> [NSURLQueryItem] in
             var array: [NSURLQueryItem] = []
             guard let key = key as? String else {
@@ -42,10 +57,7 @@ extension Dictionary {
     }
 }
 
-enum HTTPMethod:String {
-    case GET = "GET"
-    case POST = "POST"
-}
+
 
 protocol JsonConvertible {
     init(json:JSON)
@@ -180,30 +192,113 @@ extension Endpoint {
  */
 
 
+/*
+ 
+ 
+ let url = URL(string: "http://127.0.0.1/imgJSON/img.php")
+ 
+ let request = NSMutableURLRequest(url: url!)
+ request.httpMethod = "POST"
+ 
+ let boundary = generateBoundaryString()
+ 
+ request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+ 
+ if (image.image == nil)
+ {
+ return
+ }
+ 
+ let image_data = UIImagePNGRepresentation(image.image!)
+ 
+ if(image_data == nil)
+ {
+ return
+ }
+ 
+ let body = NSMutableData()
+ 
+ let fname = "test.png"
+ let mimetype = "image/png"
+ 
+ body.append("--\(boundary)\r\n".data(using: String.Encoding.utf8)!)
+ body.append("Content-Disposition:form-data; name=\"test\"\r\n\r\n".data(using: String.Encoding.utf8)!)
+ body.append("hi\r\n".data(using: String.Encoding.utf8)!)
+ 
+ body.append("--\(boundary)\r\n".data(using: String.Encoding.utf8)!)
+ body.append("Content-Disposition:form-data; name=\"file\"; filename=\"\(fname)\"\r\n".data(using: String.Encoding.utf8)!)
+ body.append("Content-Type: \(mimetype)\r\n\r\n".data(using: String.Encoding.utf8)!)
+ body.append(image_data!)
+ body.append("\r\n".data(using: String.Encoding.utf8)!)
+ 
+ body.append("--\(boundary)--\r\n".data(using: String.Encoding.utf8)!)
+ 
+ request.httpBody = body as Data
+ let session = URLSession.shared
+ 
+ let task = URLSession.shared.dataTask(with: request as URLRequest) {            (
+ data, response, error) in
+ 
+ guard let _:Data = data, let _:URLResponse = response  , error == nil else {
+ print("error")
+ return
+ }
+ 
+ let dataString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
+ 
+ print(dataString)
+ }
+ task.resume()
+ 
+ 
+ */
+
+
 extension Endpoint {
     
-    func getHttpBodyForPostRequest(parameters:[String:Any], filePathKey:String)->Data {
-        let body:NSMutableData = NSMutableData()
-        let boundary:String = "Boundary-\(NSUUID().uuidString)"
+    func getHttpBodyForPostRequest(parameters:[String:Any]? = nil)->Data {
+        guard let parameters = parameters else { return Data() }
+        let body = NSMutableData()
+        
+        let boundary = "Boundary-\(UUID().uuidString)"
+        
         for (key, value) in parameters {
             body.appendString(string: "--\(boundary)\r\n")
             body.appendString(string: "Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
             body.appendString(string: "\(value)\r\n")
         }
         
+        body.appendString(string: "--\(boundary)\r\n")
+        
+        var mimetype = "image/jpg"
+        
+        let defFileName = "yourImageName.jpg"
+        let filePathKey = "asdasd"
+        let yourImage = UIImage(named: "sampleImage.jpg")
+        let imageData = UIImageJPEGRepresentation(yourImage!, 1)
+        
+        body.appendString(string: "Content-Disposition: form-data; name=\"\(filePathKey)\"; filename=\"\(defFileName)\"\r\n")
+        body.appendString(string: "Content-Type: \(mimetype)\r\n\r\n")
+        body.append(imageData!)
+        body.appendString(string: "\r\n")
+        
+        body.appendString(string: "--\(boundary)--\r\n")
+        
+        return body as Data
     }
+    
     
     
 }
 
+
 extension NSMutableData {
-    
     func appendString(string: String) {
         let data = string.data(using: String.Encoding.utf8, allowLossyConversion: true)
         append(data!)
     }
- 
 }
+
 
 enum RouterError: Error {
     case DataTypeMismatch

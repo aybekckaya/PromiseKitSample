@@ -9,3 +9,4 @@
 import Foundation
 
 let baseApiURL:String = "http://ergast.com/api/f1/"
+let loggingEnabled:Bool = true 

@@ -9,6 +9,7 @@
 import Foundation
 import PromiseKit
 import SwiftyJSON
+import Alamofire
 
 enum F1Endpoint:Endpoint {
     case GetSeasons
@@ -17,10 +18,10 @@ enum F1Endpoint:Endpoint {
     fileprivate var route: RouteParams {
         switch self {
         case .GetSeasons:
-            return (path: "seasons.json" , parameters:nil , responseType: Season.self , method:HTTPMethod.GET)
+            return (path: "seasons.json" , parameters:nil , responseType: Season.self , method:HTTPMethod.get)
         case .RaceScheduleEnum(let year):
             let path = year+".json"
-            return (path: path , parameters:nil , responseType: RaceSchedule.self , method:HTTPMethod.GET)
+            return (path: path , parameters:nil , responseType: RaceSchedule.self , method:HTTPMethod.get)
         }
         
     }

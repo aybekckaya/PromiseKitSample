@@ -32,6 +32,8 @@ class NetworkResultVC: BaseVC {
             raceScheduleRequest()
         case .requiSamplePOST:
             requiSamplePostRequest()
+        case .requiSampleGET:
+            requiSampleGetRequest()
         default:
             break
         }
@@ -66,8 +68,31 @@ extension NetworkResultVC {
         }
     }
     
+    
+    func requiSampleGetRequest() {
+        let getPromise:Promise<RequiModel> = RequiEndpoint.GetRequest.promise()
+        getPromise.then { model -> Void in
+            print("model : \(model)")
+            }.catch {error in
+                print("erorr :\(error)")
+        }
+    }
+    
+    
     func requiSamplePostRequest() {
         
+        let image = UIImage(named:"sampleImage.jpg")
+        let data = UIImageJPEGRepresentation(image!, 1)
+        let media = MediaNetwork(mimeType: MimeNetwork.JPG, mediaName: "sampleMediaImage", mediaData: data)
+        
+        let parameters:[String:Any] = ["name":"Aybek" , "age":33 , "sayHi":true , "sampleMedia":media]
+        
+        let postPromise:Promise<RequiModel> = RequiEndpoint.PostRequest(parameters: parameters).promise()
+        postPromise.then { model -> Void in
+            print("model :\(model)")
+            }.catch {error in
+                print("error: \(error)")
+        }
     }
     
     
