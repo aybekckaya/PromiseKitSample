@@ -8,10 +8,11 @@
 
 import UIKit
 import PromiseKit
+import CoreLocation
 
 class NetworkResultVC: BaseVC {
 
-    var queryType:NetworkQueryPageType = NetworkQueryPageType.requiSamplePOST
+    var queryType:NetworkQueryPageType = NetworkQueryPageType.locationAndRequestSample
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,6 +35,8 @@ class NetworkResultVC: BaseVC {
             requiSamplePostRequest()
         case .requiSampleGET:
             requiSampleGetRequest()
+        case .locationAndRequestSample:
+            locationAndRequi()
         default:
             break
         }
@@ -95,56 +98,44 @@ extension NetworkResultVC {
         }
     }
     
-    
-    
-}
-
-/*
- let areasPromise: Promise<AreasResponse> = CatalogEndpoint.GetAreas(catalogName: catalogName).promise().wrapWithLoadingAnimator(view: self.view)
- areasPromise.then {areasResponse  -> Void in
- self.regionsDidLoad(regions: areasResponse.ResultSet)
- self.reloadTableView()
- self.tableView.isHidden = false
- }.catch { (error) in
- print(error)
- }
- 
- 
- 
- 
- private func getUserInfo()->Promise<Void> {
- return Promise {fulfill , reject in
- guard 🔒.loggedIn else {
- fulfill()
- return
- }
- firstly(execute: { () -> Promise<GetCurrentUserInfoResponse> in
- return UserEndpoint.GetCurrentUserInfo.promise()
- }).then(execute: { response -> Void in
- 💾.saveCurrentUserInfoResponse(userInfoResponse: response)
- fulfill()
- }).catch(execute: { error in
- reject(error)
- })
- }
- }
-
- 
- 
- */
-/*
-// Promises
-extension NetworkResultVC {
-    func seasonRequestPromise()->Promise<Season> {
-        return Promise {fulfill , reject in
-                firstly(execute: { () -> Promise<Season> in
-                    return F1Endpoint.GetSeasons.promise()
-                })
+    func locationAndRequi() {
+        let image = UIImage(named:"sampleImage.jpg")
+        let data = UIImageJPEGRepresentation(image!, 1)
+        let media = MediaNetwork(mimeType: MimeNetwork.JPG, mediaName: "sampleMediaImage", mediaData: data)
+        let parameters:[String:Any] = ["name":"Aybek" , "age":33 , "sayHi":true , "sampleMedia":media]
+        
+         let postPromise:Promise<RequiModel> = RequiEndpoint.PostWithLocation(parameters: parameters).promise()
+        
+        CLLocationManager.requestAuthorization().then{ authStatus->Promise<CLLocation> in
+            guard authStatus == CLAuthorizationStatus.authorizedWhenInUse else {
+                    let error = NSError(domain: "PromiseKitSampler", code: 0,
+                                    userInfo: [NSLocalizedDescriptionKey: "UnAuthorized location"])
+                    throw error
+                }
+                return CLLocationManager.promise()
+            }.then {location ->Promise<RequiModel>  in
+                print("locaiton : \(location)")
+                return postPromise
+            }.then { reqModel -> Void in
+                print("req Model :\(reqModel)")
+            }.catch { error in
+                print("err : \(error)")
+             }
+        /*
+        CLLocationManager.promise().then { location -> Promise<RequiModel> in
+            print("location : \(location)")
+            return postPromise
+            }.then { model -> Void in
+                print("model : \(model)")
+            }.catch{error in
+                print("err : \(error)")
         }
+ */
+        
     }
+    
 }
 
-*/
 
 
 

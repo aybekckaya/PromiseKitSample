@@ -15,6 +15,7 @@ enum NetworkQueryPageType:Int {
     case requiSampleGET
     case requiSampleGETWithParameters
     case requiSamplePOST
+    case locationAndRequestSample
     
     func stringify()->String {
         switch self {
@@ -30,6 +31,8 @@ enum NetworkQueryPageType:Int {
             return "Requi get with parameters"
         case .requiSamplePOST:
             return "Requi post"
+        case .locationAndRequestSample:
+            return "Location and request sample"
         default:
             break
         }
