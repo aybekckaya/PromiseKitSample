@@ -12,7 +12,7 @@ import CoreLocation
 
 class NetworkResultVC: BaseVC {
 
-    var queryType:NetworkQueryPageType = NetworkQueryPageType.locationAndRequestSample
+    var queryType:NetworkQueryPageType = NetworkQueryPageType.photoLibrarySample
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +24,10 @@ class NetworkResultVC: BaseVC {
     
     private func makeRequest() {
         switch queryType {
-        case .photoLibraryAndLocationSample:
-            photoLibraryAndRequest()
+
+        case .photoLibrarySample:
+            photoLibraryRequest()
+
         case .locationAndRequestSample:
             locationAndRequi()
         default:
@@ -43,6 +45,7 @@ class NetworkResultVC: BaseVC {
 
 // Network request
 extension NetworkResultVC {
+
     
     
     func requiSamplePostRequest() {
@@ -86,7 +89,10 @@ extension NetworkResultVC {
              }
     }
     
-    func photoLibraryAndRequest() {
+
+    
+    func photoLibraryRequest() {
+
         
     }
     

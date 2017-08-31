@@ -9,23 +9,21 @@
 import UIKit
 
 enum NetworkQueryPageType:Int {
-    case requiSamplePOSTImage
+
+   
+    case requiSamplePOST
     case locationAndRequestSample
-    case photoLibrarySampleBasic
-    case photoLibraryAndLocationSample
-    
-    /*will be implemented */
-    case advancedChaining
+    case photoLibrarySample
     
     func stringify()->String {
         switch self {
+        case .requiSamplePOST:
+            return "Requi post"
         case .locationAndRequestSample:
             return "Location and request sample"
-        case .photoLibrarySampleBasic:
+        case .photoLibrarySample:
             return "Photo Library sample"
-        case .photoLibraryAndLocationSample:
-            return "Photo Library and Location sample"
-        
+
         default:
             return ""
         }
@@ -104,7 +102,7 @@ extension NetworkVC:UITableViewDataSource {
 
 extension NetworkVC:UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-       
+
     }
 }
 
