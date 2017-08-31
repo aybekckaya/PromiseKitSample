@@ -24,8 +24,10 @@ class NetworkResultVC: BaseVC {
     
     private func makeRequest() {
         switch queryType {
+
         case .photoLibrarySample:
             photoLibraryRequest()
+
         case .locationAndRequestSample:
             locationAndRequi()
         default:
@@ -43,15 +45,7 @@ class NetworkResultVC: BaseVC {
 
 // Network request
 extension NetworkResultVC {
-    
-    func requiSampleGetRequest() {
-        let getPromise:Promise<RequiModel> = RequiEndpoint.GetRequest.promise()
-        getPromise.then { model -> Void in
-            print("model : \(model)")
-            }.catch {error in
-                print("erorr :\(error)")
-        }
-    }
+
     
     
     func requiSamplePostRequest() {
@@ -95,12 +89,17 @@ extension NetworkResultVC {
              }
     }
     
+
     
     func photoLibraryRequest() {
+
         
     }
     
 }
+
+
+
 
 
 

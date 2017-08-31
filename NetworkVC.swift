@@ -9,6 +9,7 @@
 import UIKit
 
 enum NetworkQueryPageType:Int {
+
    
     case requiSamplePOST
     case locationAndRequestSample
@@ -22,8 +23,9 @@ enum NetworkQueryPageType:Int {
             return "Location and request sample"
         case .photoLibrarySample:
             return "Photo Library sample"
+
         default:
-            break
+            return ""
         }
     }
     
@@ -100,7 +102,7 @@ extension NetworkVC:UITableViewDataSource {
 
 extension NetworkVC:UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
+
     }
 }
 

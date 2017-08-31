@@ -38,7 +38,7 @@ enum RequiEndpoint:Endpoint {
 
 
 extension RequiEndpoint {
-   // fileprivate static let urlStringBase:String = "http://localhost:8888/mstGame/public/samples/"
+  
     fileprivate static let urlStringBase:String = "https://httpbin.org/"
     
     func promise<T:JsonConvertible>()->Promise<T> {
