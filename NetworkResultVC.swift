@@ -24,17 +24,8 @@ class NetworkResultVC: BaseVC {
     
     private func makeRequest() {
         switch queryType {
-        case .allSeasons:
-            seasonsRequest()
-        case .cocktailCategoryList:
-            
-            break
-        case .raceSchedule:
-            raceScheduleRequest()
-        case .requiSamplePOST:
-            requiSamplePostRequest()
-        case .requiSampleGET:
-            requiSampleGetRequest()
+        case .photoLibraryAndLocationSample:
+            photoLibraryAndRequest()
         case .locationAndRequestSample:
             locationAndRequi()
         default:
@@ -52,34 +43,6 @@ class NetworkResultVC: BaseVC {
 
 // Network request
 extension NetworkResultVC {
-    func seasonsRequest() {
-        let seasonPromise:Promise<Season> = F1Endpoint.GetSeasons.promise()
-        seasonPromise.then { seasonsData -> Void in
-            print("season data : \(seasonsData)")
-        }.catch { error in
-            print("error : \(error)")
-        }
-    }
-    
-    
-    func raceScheduleRequest() {
-        let racePromise:Promise<RaceSchedule> = F1Endpoint.RaceScheduleEnum(year: "2001").promise()
-        racePromise.then { scheduleData -> Void in
-            print("data : \(scheduleData)")
-        }.catch { error in
-            print("error :\(error)")
-        }
-    }
-    
-    
-    func requiSampleGetRequest() {
-        let getPromise:Promise<RequiModel> = RequiEndpoint.GetRequest.promise()
-        getPromise.then { model -> Void in
-            print("model : \(model)")
-            }.catch {error in
-                print("erorr :\(error)")
-        }
-    }
     
     
     func requiSamplePostRequest() {
@@ -121,20 +84,16 @@ extension NetworkResultVC {
             }.catch { error in
                 print("err : \(error)")
              }
-        /*
-        CLLocationManager.promise().then { location -> Promise<RequiModel> in
-            print("location : \(location)")
-            return postPromise
-            }.then { model -> Void in
-                print("model : \(model)")
-            }.catch{error in
-                print("err : \(error)")
-        }
- */
+    }
+    
+    func photoLibraryAndRequest() {
         
     }
     
 }
+
+
+
 
 
 
