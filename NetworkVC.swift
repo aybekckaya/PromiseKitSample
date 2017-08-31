@@ -9,37 +9,30 @@
 import UIKit
 
 enum NetworkQueryPageType:Int {
-    case allSeasons
-    case cocktailCategoryList
-    case raceSchedule
-    case requiSampleGET
-    case requiSampleGETWithParameters
-    case requiSamplePOST
+    case requiSamplePOSTImage
     case locationAndRequestSample
+    case photoLibrarySampleBasic
+    case photoLibraryAndLocationSample
+    
+    /*will be implemented */
+    case advancedChaining
     
     func stringify()->String {
         switch self {
-        case .allSeasons:
-            return "Get all seasons"
-        case .cocktailCategoryList:
-            return "Get Cocktail Category List"
-        case .raceSchedule:
-            return "Race Schedule"
-        case .requiSampleGET:
-            return "Requi sample to get"
-        case .requiSampleGETWithParameters:
-            return "Requi get with parameters"
-        case .requiSamplePOST:
-            return "Requi post"
         case .locationAndRequestSample:
             return "Location and request sample"
+        case .photoLibrarySampleBasic:
+            return "Photo Library sample"
+        case .photoLibraryAndLocationSample:
+            return "Photo Library and Location sample"
+        
         default:
-            break
+            return ""
         }
     }
     
     static func all()->[NetworkQueryPageType] {
-        return [NetworkQueryPageType.allSeasons]
+        return [NetworkQueryPageType.locationAndRequestSample]
     }
 }
 
@@ -111,15 +104,7 @@ extension NetworkVC:UITableViewDataSource {
 
 extension NetworkVC:UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch indexPath.row {
-        case NetworkQueryPageType.allSeasons.rawValue:
-            let vc = NetworkResultVC(nibName: NetworkResultVC.identifier, bundle: nil)
-            vc.queryType = NetworkQueryPageType.allSeasons
-            navigationController?.pushViewController(vc, animated: true)
-            break 
-        default:
-            break
-        }
+       
     }
 }
 
